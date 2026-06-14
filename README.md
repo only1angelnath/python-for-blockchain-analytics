@@ -133,4 +133,4 @@ MIT — use freely, credit appreciated. See [LICENSE](LICENSE).
 
 ---
 
-*Built by [@only1angelnath](https://github.com/only1angelnath) · Lagos, Nigeria*
+*Built by [@only1angelnath](https://github.com/only1angelnath)
