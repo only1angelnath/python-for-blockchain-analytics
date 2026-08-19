@@ -42,8 +42,8 @@ pip install jupyterlab pandas numpy matplotlib requests
 ## Step 5: Verify everything works
 
 ```bash
-python3 -c "import pandas; print('pandas ✓')"
-python3 -c "import numpy; print('numpy ✓')"
+python3 -c "import pandas; print('pandas done')"
+python3 -c "import numpy; print('numpy done')"
 ```
 
 ✅ If both print without errors, your environment is ready.
