@@ -39,6 +39,7 @@ Write a Block class with:
   7. __str__   → "Block 19,847,293 | 142 txns | 87.3% gas | 18.5 Gwei"
   8. __len__   → number of transactions
 
+
 Test with:
   block = Block(
       block_number  = 19_847_293,
@@ -54,6 +55,64 @@ Print: repr, str, tx_count(), gas_utilisation(), is_full(), len(block)
 """
 
 # YOUR CODE HERE
+class Block:
+    """
+A blockchain is made of blocks. Each block has:
+    block_number:  (int)
+    timestamp:     (int)   — Unix timestamp
+    miner:         (str)   — address that mined/validated the block
+    tx_hashes:     (list)  — list of transaction hashes in this block
+    gas_used:      (int)
+    gas_limit:     (int)   — default: 30_000_000
+    base_fee_gwei: (float)
+  """
+    def __init__(self, block_number: int, timestamp: int, miner: str, tx_hashes: list, gas_used: int, base_fee_gwei: float, gas_limit: int = 30_000_000):
+        self.block_number = block_number
+        self.timestamp = timestamp
+        self.miner = miner
+        self.tx_hashes = tx_hashes
+        self.gas_used = gas_used
+        self.gas_limit = gas_limit
+        self.base_fee_gwei = base_fee_gwei
+
+    def tx_count(self):
+        return len(self.tx_hashes)
+
+    def gas_utilisation(self):
+        return (self.gas_used / self.gas_limit) * 100
+
+    def is_full(self):
+        return self.gas_utilisation() > 95
+
+    def add_transaction(self, tx_hash):
+        self.tx_hashes.append(tx_hash)
+
+    def __repr__(self):
+        return f"Block(number={self.block_number}, txns={self.tx_count()}, gas={self.gas_utilisation():.1f}%)"
+
+    def __str__(self):
+        return f"Block {self.block_number:,} | {self.tx_count()} txns | {self.gas_utilisation():.1f}% gas | {self.base_fee_gwei} Gwei"
+
+    def __len__(self):
+        return self.tx_count()
+
+block = Block(
+      block_number  = 19_847_293,
+      timestamp     = 1_714_000_000,
+      miner         = "0xeBec795c9c8bBD61FFc14A6662944748F299cAec",
+      tx_hashes     = ["0xaaa", "0xbbb", "0xccc"],
+      gas_used      = 26_174_000,
+      base_fee_gwei = 18.5,
+  )
+
+block.add_transaction("0xddd")
+
+print(f"  repr:            {repr(block)}")
+print(f"  str:             {block}")
+print(f"  tx_count:        {block.tx_count()}")
+print(f"  gas_utilisation: {block.gas_utilisation():.2f}%")
+print(f"  is_full:         {block.is_full()}")
+print(f"  len:             {len(block)}")
 
 
 # ─────────────────────────────────────────────────────────────
@@ -93,6 +152,73 @@ Test:
 """
 
 # YOUR CODE HERE
+import datetime
+class TokenRegistry:
+  """
+  A TokenRegistry that tracks all registered tokens.
+
+  Class attributes (shared across ALL registry instances):
+    - _registry: dict  — {symbol: {price, decimals}}
+    - _count: int      — total tokens ever registered
+  """
+  _registry = {}
+  _count = 0
+
+  def __init__(self, name: str, created_at: str):
+    self.name = name
+    self.created_at = created_at
+
+  def register(self, symbol: str, price: float, decimals: int = 18):
+    if symbol in TokenRegistry._registry:
+      raise ValueError(f"Token {symbol} is already registered.")
+    TokenRegistry._registry[symbol] = {"price": price, "decimals": decimals}
+    TokenRegistry._count += 1
+
+  def get(self, symbol: str):
+    if symbol not in TokenRegistry._registry:
+      raise KeyError(f"Token {symbol} not found in registry.")
+    return TokenRegistry._registry[symbol]
+
+  def remove(self, symbol: str):
+    if symbol not in TokenRegistry._registry:
+      raise KeyError(f"Token {symbol} not found in registry.")
+    del TokenRegistry._registry[symbol]
+    TokenRegistry._count -= 1
+
+  def all_symbols(self):
+    return sorted(TokenRegistry._registry.keys())
+
+  @classmethod
+  def count(cls):
+    return cls._count
+
+  def summary(self):
+    print(f"Token Registry: {self.name} (created at {self.created_at})")
+    print("Symbol | Price | Decimals")
+    print("-" * 30)
+    for symbol, info in sorted(TokenRegistry._registry.items()):
+      print(f"{symbol} | {info['price']} | {info['decimals']}")
+
+TokenRegistry._registry = {}
+TokenRegistry._count    = 0
+
+mainnet = TokenRegistry("Mainnet", "2026-08-19 05:22")
+mainnet.register("ETH",  3247.85, 18)
+mainnet.register("BTC",  67412.0, 8)
+mainnet.register("USDC", 1.00,    6)
+mainnet.register("UNI",  12.84,   18)
+
+try:
+    mainnet.register("ETH", 3310.0)
+except ValueError as e:
+    print(f"  ValueError: {e}")
+
+print(f"  Total tokens: {TokenRegistry.count()}")
+mainnet.summary()
+
+testnet = TokenRegistry("Testnet", "2026-08-19 05:30")
+testnet.register("WETH", 3247.85, 18)
+print(f"\n  After testnet, total count: {TokenRegistry.count()}")
 
 
 # ─────────────────────────────────────────────────────────────
@@ -135,13 +261,167 @@ Test:
 """
 
 # YOUR CODE HERE
+class LiquidityPool:
+    """
+    A LiquidityPool class representing a pair of tokens in a pool.
+
+    Attributes:
+        - token0 (str)     — first token symbol
+        - token1 (str)     — second token symbol
+        - reserve0 (float) — amount of token0 in pool
+        - reserve1 (float) — amount of token1 in pool
+        - fee_tier (int)   — in basis points (500 = 0.05%)
+    """
+    def __init__(self, token0: str, token1: str, reserve0: float, reserve1: float, fee_tier: int):
+        self.token0 = token0
+        self.token1 = token1
+        self.reserve0 = reserve0
+        self.reserve1 = reserve1
+        self.fee_tier = fee_tier
+
+    @property
+    def price(self):
+        return self.reserve1 / self.reserve0
+
+    @property
+    def pair_name(self):
+        return f"{self.token0}/{self.token1}"
+
+    @property
+    def fee_pct(self):
+        return self.fee_tier / 10_000
+
+    def calculate_tvl(self, price0_usd: float, price1_usd: float):
+        return self.reserve0 * price0_usd + self.reserve1 * price1_usd
+
+    def __repr__(self):
+        return f"LiquidityPool('{self.pair_name}', fee={self.fee_pct*100:.2f}%, price={self.price:.2f})"
+
+    def __str__(self):
+        return f"{self.pair_name} | Price: {self.price:.2f} | Fee: {self.fee_pct*100:.2f}%"
+
+    def __eq__(self, other):
+        return {self.token0, self.token1} == {other.token0, other.token1}
+
+    def __gt__(self, other):
+        return self.reserve0 > other.reserve0
+
+    def __lt__(self, other):
+        return self.reserve0 < other.reserve0
+
+pool1 = LiquidityPool("USDC", "ETH",  1_000_000, 308.0, fee_tier=500)
+pool2 = LiquidityPool("USDC", "ETH",  500_000,   154.0, fee_tier=3000)
+pool3 = LiquidityPool("ETH",  "USDC", 308.0,     1_000_000, fee_tier=500)
+
+print(f"  {pool1}")
+print(f"  {pool2}")
+print(f"  {pool3}")
+print(f"  price:        {pool1.price:,.4f}")
+print(f"  pair_name:    {pool1.pair_name}")
+print(f"  TVL:          ${pool1.calculate_tvl(1.0, 3247.85):,.2f}")
+print(f"  pool1==pool3: {pool1 == pool3}")
+print(f"  pool1>pool2:  {pool1 > pool2}")
+sorted_pools = sorted([pool2, pool1])
+print(f"  sorted:       {[p.pair_name for p in sorted_pools]}") 
 
 
 # ─────────────────────────────────────────────────────────────
 # EXERCISE 4 — Inheritance: DeFi Protocol hierarchy
 # ─────────────────────────────────────────────────────────────
 print("\n── Exercise 4: Protocol inheritance hierarchy ──")
-"""
+
+class Protocol:
+    """
+    Base class for DeFi protocols.
+
+    Attributes:
+        - name (str)
+        - chain (str)
+        - tvl_usd (float)
+    """
+    def __init__(self, name: str, chain: str, tvl_usd: float):
+        self.name = name
+        self.chain = chain
+        self.tvl_usd = tvl_usd
+
+    def tvl_formatted(self):
+        if self.tvl_usd >= 1_000_000_000:
+            return f"${self.tvl_usd / 1_000_000_000:.2f}B"
+        elif self.tvl_usd >= 1_000_000:
+            return f"${self.tvl_usd / 1_000_000:.2f}M"
+        elif self.tvl_usd >= 1_000:
+            return f"${self.tvl_usd / 1_000:.2f}K"
+        else:
+            return f"${self.tvl_usd:.2f}"
+
+    def info(self):
+        return f"{self.name} on {self.chain} | with TVL: {self.tvl_formatted()}"
+
+class DEX(Protocol):
+    """
+    Class representing a decentralized exchange (DEX).
+
+    Attributes:
+        - name (str)
+        - chain (str)
+        - tvl_usd (float)
+        - volume_24h (float)
+        - fee_tier (float)
+    """
+    def __init__(self, name: str, chain: str, tvl_usd: float, volume_24h: float, fee_tier: float):
+        super().__init__(name, chain, tvl_usd)
+        self.volume_24h = volume_24h
+        self.fee_tier = fee_tier
+
+    @property
+    def fees_24h(self):
+        return self.volume_24h * self.fee_tier
+
+    @property
+    def apr_estimate(self):
+        return self.fees_24h * 365 / self.tvl_usd * 100
+
+    def info(self):
+        return f"{super().info()} | 24H Volume: ${self.volume_24h:.2f} | APR: {self.apr_estimate:.2f}%"
+
+    def is_high_yield(self, threshold=20.0):
+        return self.apr_estimate > threshold
+
+class LendingProtocol(Protocol):
+        
+        def __init__(self, name: str, chain: str, tvl_usd: float, total_borrowed: float):
+            super().__init__(name, chain, tvl_usd)
+            self.total_borrowed = total_borrowed
+
+        @property
+        def utilisation(self):
+            return self.total_borrowed / self.tvl_usd * 100
+
+        def info(self):
+            return f"{super().info()} | Utilisation: {self.utilisation:.2f}%"
+
+        def borrow_apr(self, base_rate=2.0):
+            return base_rate * (1 + self.utilisation/100)
+
+uniswap = DEX("Uniswap V3", "ethereum", 5_200_000_000, 1_800_000_000, 0.003)
+gmx     = DEX("GMX",        "arbitrum",   680_000_000,   310_000_000, 0.001)
+aave    = LendingProtocol("Aave V3", "ethereum", 12_800_000_000, 8_200_000_000)
+
+for p in [uniswap, gmx, aave]:
+    print(f"  {p.info()}")
+
+print(f"\n  uniswap isinstance DEX:             {isinstance(uniswap, DEX)}")
+print(f"  aave    isinstance LendingProtocol: {isinstance(aave, LendingProtocol)}")
+print(f"  aave    isinstance DEX:             {isinstance(aave, DEX)}")
+print(f"  Uniswap high yield: {uniswap.is_high_yield()}")
+print(f"  Aave borrow APR:    {aave.borrow_apr():.2f}%")
+
+sorted_p = sorted([uniswap, gmx, aave], key=lambda p: p.tvl_usd, reverse=True)
+print(f"  Sorted by TVL:      {[p.name for p in sorted_p]}")
+
+# ─────────────────────────────────────────────────────────────
+
+"""      
 Protocol (parent)
   - name, chain, tvl_usd
   - tvl_formatted() → "$5.20B" / "$420.00M" / "$12.50K"
@@ -218,7 +498,68 @@ Test:
 """
 
 # YOUR CODE HERE
+class PriceOracle:
+    """Tracks a token price and computes derived metrics via properties."""
 
+    def __init__(self, symbol, initial_price, decimals=18):
+        self.symbol         = symbol
+        self.decimals       = decimals
+        self._price         = initial_price
+        self._price_history = []
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, new_price):
+        if new_price <= 0:
+            raise ValueError(f"Price must be positive, got {new_price}")
+        self._price_history.append(self._price)
+        self._price = new_price
+
+    @property
+    def change_24h(self):
+        if not self._price_history:
+            return 0.0
+        return (self._price - self._price_history[0]) / self._price_history[0] * 100
+
+    @property
+    def high(self):
+        return max(self.all_prices)
+
+    @property
+    def low(self):
+        return min(self.all_prices)
+
+    @property
+    def all_prices(self):
+        return self._price_history + [self._price]
+
+    def __repr__(self):
+        return (f"PriceOracle({self.symbol!r}, price={self._price}, "
+                f"history={len(self._price_history)})")
+
+    def __str__(self):
+        sign = "+" if self.change_24h >= 0 else ""
+        return (f"{self.symbol}: ${self._price:,.2f} | "
+                f"24h: {sign}{self.change_24h:.2f}% | "
+                f"High: ${self.high:,.2f} | Low: ${self.low:,.2f}")
+
+
+oracle = PriceOracle("ETH", 3050.0)
+for p in [3120.0, 3247.85, 3310.0, 3290.0, 3350.0, 3247.85]:
+    oracle.price = p
+
+print(f"  {oracle}")
+print(f"  High: ${oracle.high:,.2f}")
+print(f"  Low:  ${oracle.low:,.2f}")
+print(f"  All prices: {oracle.all_prices}")
+
+try:
+    oracle.price = -100
+except ValueError as e:
+    print(f"  Error: {e}")
 
 # ─────────────────────────────────────────────────────────────
 # EXERCISE 6 — Full class: Transaction
@@ -273,8 +614,81 @@ Test:
 """
 
 # YOUR CODE HERE
+class completeTransaction:
+    """
+    A complete Transaction class representing a blockchain transaction.
 
+    Attributes:
+        - tx_hash, from_address, to_address
+        - value_wei (int), gas_used (int), gas_price_gwei (float)
+        - block_number (int)
+        - status (str)   — "success" or "failed"
+        - tx_type (str)  — "transfer", "swap", "contract_call", etc.
+    """
+    def __init__(self, tx_hash, from_address, to_address, value_wei, gas_used, gas_price_gwei, block_number, status, tx_type):
+        self.tx_hash = tx_hash
+        self.from_address = from_address
+        self.to_address = to_address
+        self.value_wei = value_wei
+        self.gas_used = gas_used
+        self.gas_price_gwei = gas_price_gwei
+        self.block_number = block_number
+        self.status = status
+        self.tx_type = tx_type
 
+    @property
+    def value_eth(self):
+        return self.value_wei / 1e18
+
+    @property
+    def gas_cost_eth(self):
+        return self.gas_used * self.gas_price_gwei * 1e9 / 1e18
+
+    @property
+    def total_cost_eth(self):
+        return self.value_eth + self.gas_cost_eth
+
+    @property
+    def is_success(self):
+        return self.status == "success"
+
+    def receipt(self, eth_price=3247.85):
+        total_cost_usd = self.total_cost_eth * eth_price
+        return (f"Transaction Receipt:\n"
+                f"  Hash: {self.tx_hash}\n"
+                f"  From: {self.from_address}\n"
+                f"  To: {self.to_address}\n"
+                f"  Value: {self.value_eth:.4f} ETH\n"
+                f"  Gas Used: {self.gas_used}\n"
+                f"  Gas Price: {self.gas_price_gwei} Gwei\n"
+                f"  Total Cost: {self.total_cost_eth:.4f} ETH (${total_cost_usd:.2f})\n"
+                f"  Block Number: {self.block_number}\n"
+                f"  Status: {self.status}\n"
+                f"  Type: {self.tx_type}")
+
+    def summary(self):
+        return (f"{'✅' if self.is_success else '❌'} {self.tx_hash[:10]}... | "
+                f"{self.value_eth:.4f} ETH | "
+                f"{self.gas_used:,} gas @ {self.gas_price_gwei} Gwei")
+
+    def __repr__(self):
+        return (f"Transaction(tx_hash='{self.tx_hash}', "
+                f"from_address='{self.from_address}', "
+                f"to_address='{self.to_address}', "
+                f"value_wei={self.value_wei}, "
+                f"gas_used={self.gas_used}, "
+                f"gas_price_gwei={self.gas_price_gwei}, "
+                f"block_number={self.block_number}, "
+                f"status='{self.status}', "
+                f"tx_type='{self.tx_type}')")
+
+    def __str__(self):
+        return self.summary()
+
+    def __eq__(self, other):
+        return self.tx_hash == other.tx_hash
+
+    def __lt__(self, other):
 # ─────────────────────────────────────────────────────────────
 # CHALLENGE — Phase 1 Capstone: simple_chain.py
 # ─────────────────────────────────────────────────────────────
