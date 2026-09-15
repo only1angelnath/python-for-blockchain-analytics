@@ -1,6 +1,6 @@
 # Python for Blockchain Analytics
 
-> A complete, beginner-friendly course taking you from zero Python to Blockchain Data Engineer and ML Engineer — using real on-chain data throughout.
+> A complete, beginner-friendly course taking you from zero Python to Blockchain Data Engineer and ML Engineer — using real on-chain data throughout. **I am documenting as I progress in my Journey so this is a work in progress**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
