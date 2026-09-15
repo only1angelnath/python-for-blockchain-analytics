@@ -10,6 +10,10 @@ Instructions:
 Solutions are in: exercises_solutions.py
 """
 
+import hashlib
+import time as time_module
+from datetime import datetime
+
 print("=" * 60)
 print("WEEK 6 EXERCISES — Object-Oriented Programming")
 print("=" * 60)
@@ -153,6 +157,7 @@ Test:
 
 # YOUR CODE HERE
 import datetime
+import hashlib
 class TokenRegistry:
   """
   A TokenRegistry that tracks all registered tokens.
@@ -689,10 +694,44 @@ class completeTransaction:
         return self.tx_hash == other.tx_hash
 
     def __lt__(self, other):
+        return self.value_eth < other.value_eth
+
+tx1 = completeTransaction(
+      "0x5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef84bfed1be16dfba1b22060",
+      "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+      "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+      value_wei=1_500_000_000_000_000_000,
+      gas_used=21_000, gas_price_gwei=20,
+      block_number=19_847_293, status="success", tx_type="transfer")
+
+tx2 = completeTransaction(
+      "0xabc123def456abc123def456abc123def456abc123def456abc123def456abc1",
+      "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+      "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+      value_wei=500_000_000_000_000_000,
+      gas_used=148_320, gas_price_gwei=25,
+      block_number=19_847_294, status="success", tx_type="swap")
+
+print(f"  repr: {repr(tx1)}")
+print(f"  str:  {tx1}")
+print(f"  value_eth:      {tx1.value_eth:.4f} ETH")
+print(f"  gas_cost_eth:   {tx1.gas_cost_eth:.4f} ETH")
+print()
+print(f"  receipt:\n{tx1.receipt()}")
+print()
+print(f"  summary tx1: {tx1.summary()}")
+print(f"  summary tx2: {tx2.summary()}")
+print(f"  tx1 == tx2: {tx1 == tx2}")
+sorted_txs = sorted([tx2, tx1])
+print(f"  sorted by value_eth: {[tx.tx_hash[:10] for tx in sorted_txs]}")
+
+
 # ─────────────────────────────────────────────────────────────
 # CHALLENGE — Phase 1 Capstone: simple_chain.py
 # ─────────────────────────────────────────────────────────────
 print("\n── Challenge: simple_chain — Simulated blockchain ──")
+
+
 """
 Build a minimal blockchain in pure Python using three classes.
 
@@ -737,9 +776,105 @@ Demo:
 """
 
 # YOUR CODE HERE
+class ChainTxn:
+    def __init__(self, from_addr, to_addr, amount) -> None:
+        self.from_addr = from_addr
+        self.to_addr = to_addr
+        self.amount = amount
+        self.timestamp = int(time_module.time())
+
+    @property
+    def tx_hash(self):
+        raw=f"{self.from_addr}{self.to_addr}{self.amount}{self.timestamp}"
+        return hashlib.sha256(raw.encode()).hexdigest()
+
+    def __str__(self):
+            return f"{self.from_addr} → {self.to_addr} | {self.amount} ETH"
+
+class ChainBlock:
+    def __init__(self, index, previous_hash, transactions) -> None:
+        self.index = index
+        self.previous_hash = previous_hash
+        self.transactions = transactions
+        self.timestamp = int(time_module.time())
+
+    @property
+    def block_hash(self):
+        tx_hashes = ''.join(tx.tx_hash for tx in self.transactions)
+        raw=f"{self.index}{self.previous_hash}{tx_hashes}{self.timestamp}"
+        return hashlib.sha256(raw.encode()).hexdigest()
+
+    def is_valid(self):
+        return self.block_hash.startswith("00")
+
+    def __str__(self):
+        return f"Block #{self.index} | {len(self.transactions)} txns | hash: {self.block_hash[:10]}..."
+
+class SimpleBlockchain:
+    def __init__(self):
+        genesis_block = ChainBlock(0, "0"*64, [])
+        self.chain = [genesis_block]
+        self.pending_transactions = []
+
+    def add_transaction(self, from_addr, to_addr, amount):
+        txn = ChainTxn(from_addr, to_addr, amount)
+        self.pending_transactions.append(txn)
+
+    def mine_block(self):
+        index = len(self.chain)
+        previous_hash = self.chain[-1].block_hash
+        new_block = ChainBlock(index, previous_hash, self.pending_transactions)
+        self.chain.append(new_block)
+        self.pending_transactions = []
+
+    def is_valid_chain(self):
+        for i in range(1, len(self.chain)):
+            if self.chain[i].previous_hash != self.chain[i-1].block_hash:
+                return False
+        return True
+
+    def get_balance(self, address):
+        balance = 0.0
+        for block in self.chain:
+            for txn in block.transactions:
+                if txn.to_addr == address:
+                    balance += txn.amount
+                if txn.from_addr == address:
+                    balance -= txn.amount
+        return balance
+
+    def __len__(self):
+        return len(self.chain)
+
+    def __str__(self):
+        return f"Blockchain: {len(self.chain)} blocks | valid: {self.is_valid_chain()}"
+
+# TESTS
+bc = SimpleBlockchain()
+bc.add_transaction("0xAlice", "0xBob",   5.0)
+bc.add_transaction("0xBob",   "0xCarol", 2.0)
+bc.mine_block()
+
+bc.add_transaction("0xCarol", "0xAlice", 1.0)
+bc.add_transaction("0xAlice", "0xDave",  0.5)
+bc.mine_block()
+
+print(f"\n  {bc}")
+print(f"  Chain valid: {bc.is_valid_chain()}")
+for block in bc.chain:
+    print(f"  {block}")
+    for tx in block.transactions:
+        print(f"    {tx}")
+
+print()
+for addr in ["0xAlice", "0xBob", "0xCarol", "0xDave"]:
+    print(f"  Balance {addr}: {bc.get_balance(addr)} ETH")
+
+print()
+print(f"  {bc}")
 
 
 print("\n" + "=" * 60)
-print("Done! Check exercises_solutions.py to compare.")
+print("Capstone Project Done! Check exercises_solutions.py to compare.")
 print("Phase 1 complete — 6 weeks of Python foundations!")
 print("=" * 60)
