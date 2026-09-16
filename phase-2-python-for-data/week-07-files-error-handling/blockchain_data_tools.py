@@ -57,19 +57,6 @@ print(eth_block_number())
 """,
     },
 
-    "llamanodes": {
-        "name":       "LlamaNodes",
-        "website":    "https://llamanodes.com",
-        "free_tier":  "Free public endpoints, no key",
-        "chains":     ["ethereum", "polygon", "arbitrum", "optimism", "base"],
-        "use_when":   "Backup RPC when Ankr is congested",
-        "endpoints": {
-            "ethereum": "https://eth.llamarpc.com",
-            "polygon":  "https://polygon.llamarpc.com",
-            "arbitrum": "https://arbitrum.llamarpc.com",
-        },
-    },
-
     # ── Free tier with key ────────────────────────────────────
     "infura": {
         "name":       "Infura",
@@ -665,7 +652,6 @@ print(result)  # {balance_0xAlic: 1000.0, balance_0xBob1: 250.5, ...}
     },
 }
 
-
 # ══════════════════════════════════════════════════════════════
 # 5. SOLANA DATA TOOLS
 # ══════════════════════════════════════════════════════════════
@@ -798,43 +784,8 @@ ANALYTICS_PLATFORMS = {
             "DefiLlama":   "TVL, protocol, yield data — completely free API",
             "The Graph":   "Query indexed DeFi protocol data via GraphQL — free",
             "Envio":       "Build your own fast indexer — open source + free hosted tier",
-            "Flipside":    "SQL-based blockchain analytics — free tier available",
             "Allium":      "SQL + Python analytics on indexed blockchain data — free tier",
         },
-    },
-
-    "flipside": {
-        "name":       "Flipside Crypto",
-        "website":    "https://flipsidecrypto.xyz",
-        "free_tier":  "Free tier with SQL analytics API",
-        "key_env":    "FLIPSIDE_API_KEY",
-        "what_it_does": """
-Flipside provides a SQL interface to indexed blockchain data across
-Ethereum, Polygon, Avalanche, BSC, Solana, Cosmos, and more.
-Similar to the old Dune Analytics model — write SQL, get results via API.
-Free tier gives you access to the API.
-""",
-        "python_example": """
-# pip install flipside
-from flipside import Flipside
-
-sdk = Flipside(api_key="YOUR_KEY")
-
-sql = \"\"\"
-SELECT
-    date_trunc('day', block_timestamp) AS day,
-    COUNT(*)                            AS tx_count,
-    SUM(eth_value)                      AS total_volume_eth
-FROM ethereum.core.fact_transactions
-WHERE block_timestamp >= CURRENT_DATE - 7
-GROUP BY 1
-ORDER BY 1 DESC
-\"\"\"
-
-result = sdk.query(sql)
-for row in result.rows[:5]:
-    print(row)
-""",
     },
 
     "allium": {

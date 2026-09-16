@@ -35,3 +35,11 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+#dump files
+dump_*.py
+
+# Misc
+.DS_Store
+
+
