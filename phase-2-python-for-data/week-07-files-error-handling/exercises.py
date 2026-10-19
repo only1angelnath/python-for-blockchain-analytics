@@ -18,6 +18,8 @@ Solutions are in: exercises_solutions.py
 """
 
 import csv, json, os, logging, time
+from collections import defaultdict
+
 
 print("=" * 60)
 print("WEEK 7 EXERCISES — File Handling & Error Handling")
@@ -47,14 +49,6 @@ Print a summary of each finding.
 Remember: everything from CSV comes back as a string — cast before arithmetic!
 """
 
-trades = [
-    {"tx_hash":"0xaaa","protocol":"Uniswap V3","token_in":"USDC","amount_in":1000.0,"token_out":"ETH","amount_out":0.3082,"gas_gwei":20,"block":19_847_293},
-    {"tx_hash":"0xbbb","protocol":"Curve",     "token_in":"DAI", "amount_in":5000.0,"token_out":"USDC","amount_out":4997.5,"gas_gwei":22,"block":19_847_294},
-    {"tx_hash":"0xccc","protocol":"Uniswap V3","token_in":"ETH", "amount_in":2.5,  "token_out":"USDC","amount_out":8119.0,"gas_gwei":19,"block":19_847_295},
-    {"tx_hash":"0xddd","protocol":"Balancer",  "token_in":"USDC","amount_in":2000.0,"token_out":"UNI", "amount_out":155.76,"gas_gwei":25,"block":19_847_296},
-    {"tx_hash":"0xeee","protocol":"Curve",     "token_in":"USDC","amount_in":10000.0,"token_out":"USDT","amount_out":9998.0,"gas_gwei":18,"block":19_847_297},
-    {"tx_hash":"0xfff","protocol":"Uniswap V3","token_in":"UNI", "amount_in":100,  "token_out":"ETH", "amount_out":0.3952,"gas_gwei":21,"block":19_847_298},
-]
 
 # YOUR CODE HERE
 

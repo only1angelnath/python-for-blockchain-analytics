@@ -18,7 +18,7 @@ sys.path.insert(0, "../../phase-1-python-fundamentals/week-05-functions-modules"
 
 import numpy as np
 import pandas as pd
-from blockchain_utils import wei_to_eth  # noqa: F401  (used in Exercise 15)
+from blockchain_utils import * # noqa: F401  (used in Exercise 15)
 from sample_data import (make_dex_trades, make_gas_prices, make_tvl,
                          make_pair_info, make_wallet_labels)
 
@@ -33,7 +33,9 @@ def ex01_inspect(trades):
     Hint: len(), .isna(), .sum()
     """
     # YOUR CODE HERE
-    return None
+    num_rows = len(trades)
+    num_missing_gas_price = trades['gas_price_gwei'].isna().sum()
+    return (num_rows, num_missing_gas_price)
 
 
 # ── Exercise 2: Filter with AND ────────────────────────────────────────────────
@@ -44,7 +46,8 @@ def ex02_filter_and(trades):
     Hint: build a boolean mask with & and parentheses around each condition.
     """
     # YOUR CODE HERE
-    return None
+    mask = (trades['protocol'] == 'Uniswap') & (trades['side'] == 'buy') & (trades['amount_usd'] > 5000)
+    return trades.loc[mask].shape[0]
 
 
 # ── Exercise 3: IN and LIKE ────────────────────────────────────────────────────
@@ -56,6 +59,8 @@ def ex03_filter_isin_like(trades):
     Hint: .isin() and .str.startswith()
     """
     # YOUR CODE HERE
+    mask = trades['protocol'].isin(['Curve', 'Balancer']) & trades['pair'].str.startswith('WETH')
+    return trades.loc[mask].shape[0]
     return None
 
 
@@ -69,6 +74,10 @@ def ex04_gas_spend(trades):
     Hint: vectorise, no loops. Does .sum() skip NaN by default?
     """
     # YOUR CODE HERE
+    trades_with_gas_price = trades.dropna(subset=['gas_price_gwei'])
+    trades_with_gas_price['gas_cost_usd'] = trades_with_gas_price['gas_used'] * trades_with_gas_price['gas_price_gwei'] / 1e9
+    total_gas_spent_usd = trades_with_gas_price['gas_cost_usd'].sum() * ETH_PRICE
+    return round(total_gas_spent_usd, 2)
     return None
 
 
@@ -81,7 +90,14 @@ def ex05_case_when(trades):
     Hint: np.select(conditions, choices, default=...) then .value_counts()
     """
     # YOUR CODE HERE
-    return None
+    conditions = [
+        trades['amount_usd'] >= 50_000,
+        trades['amount_usd'] >= 5_000,
+        trades['amount_usd'] >= 500
+    ]
+    choices = ['whale', 'large', 'medium']
+    trades['bucket'] = np.select(conditions, choices, default='retail')
+    return trades['bucket'].value_counts().to_dict()
 
 
 # ── Exercise 6: GROUP BY ───────────────────────────────────────────────────────
@@ -91,7 +107,8 @@ def ex06_volume_by_protocol(trades):
     SQL: SELECT protocol, SUM(amount_usd) FROM trades GROUP BY 1 ORDER BY 2 DESC
     """
     # YOUR CODE HERE
-    return None
+    volume_by_protocol = trades.groupby('protocol')['amount_usd'].sum().sort_values(ascending=False)
+    return volume_by_protocol
 
 
 # ── Exercise 7: GROUP BY + pick the winner ─────────────────────────────────────
@@ -103,6 +120,10 @@ def ex07_avg_trade_by_pair(trades):
     Hint: .groupby().mean(), then .idxmax() and .max()
     """
     # YOUR CODE HERE
+    avg_trade_by_pair = trades.groupby('pair')['amount_usd'].mean()
+    pair_with_highest_avg = avg_trade_by_pair.idxmax()
+    highest_avg_trade_size = round(avg_trade_by_pair.max(), 2)
+    return (pair_with_highest_avg, highest_avg_trade_size)  
     return None
 
 
@@ -114,6 +135,8 @@ def ex08_top_trade_per_protocol(trades):
     Hint: groupby(...)["amount_usd"].idxmax() gives row labels you can pass to .loc
     """
     # YOUR CODE HERE
+    top_trades = trades.loc[trades.groupby('protocol')['amount_usd'].idxmax()]
+    return top_trades.set_index('protocol')['tx_hash'].to_dict()
     return None
 
 
@@ -126,6 +149,9 @@ def ex09_volume_by_category(trades, pair_info):
     SQL: FROM trades t LEFT JOIN pair_info p ON t.pair = p.pair GROUP BY p.category
     """
     # YOUR CODE HERE
+    merged_df = trades.merge(pair_info[['pair', 'category']], on='pair', how='left', validate='many_to_one')
+    volume_by_category = merged_df.groupby('category')['amount_usd'].sum().sort_values(ascending=False)
+    return volume_by_category
     return None
 
 
@@ -138,6 +164,9 @@ def ex10_unlabelled_wallets(trades, wallet_labels):
     Hint: merge(..., how="left", indicator=True) and look at the _merge column.
     """
     # YOUR CODE HERE
+    merged_df = trades.merge(wallet_labels[['wallet']], on='wallet', how='left', indicator=True)
+    unlabelled_wallets_count = merged_df[merged_df['_merge'] == 'left_only']['wallet'].nunique()
+    return unlabelled_wallets_count
     return None
 
 
@@ -149,6 +178,10 @@ def ex11_gas_percentiles(trades):
     Hint: .dropna().to_numpy() then np.percentile(arr, q)
     """
     # YOUR CODE HERE
+    gas_prices = trades['gas_price_gwei'].dropna().to_numpy()
+    p90 = round(np.percentile(gas_prices, 90), 2)
+    p99 = round(np.percentile(gas_prices, 99), 2)
+    return (p90, p99)
     return None
 
 
@@ -161,6 +194,12 @@ def ex12_busiest_day(trades):
     Hint: set_index("block_time"), then ["amount_usd"].resample("D").sum()
     """
     # YOUR CODE HERE
+    trades['block_time'] = pd.to_datetime(trades['block_time'])
+    trades.set_index('block_time', inplace=True)
+    daily_volume = trades['amount_usd'].resample('D').sum()
+    busiest_day = daily_volume.idxmax().strftime('%Y-%m-%d')
+    highest_volume = round(daily_volume.max(), 2)
+    return (busiest_day, highest_volume)
     return None
 
 
@@ -175,6 +214,12 @@ def ex13_gas_rolling(gas):
     Hint: .rolling(24).mean(), then .idxmax(); strftime("%Y-%m-%d %H:%M")
     """
     # YOUR CODE HERE
+    gas['timestamp'] = pd.to_datetime(gas['timestamp'])
+    gas.set_index('timestamp', inplace=True)
+    rolling_mean = gas['base_fee_gwei'].rolling(window=24).mean()
+    max_rolling_mean_timestamp = rolling_mean.idxmax().strftime('%Y-%m-%d %H:%M')
+    max_rolling_mean_value = round(rolling_mean.max(), 2)
+    return (max_rolling_mean_timestamp, max_rolling_mean_value)
     return None
 
 
@@ -187,6 +232,12 @@ def ex14_worst_drawdown(tvl):
     Hint: .pivot(), .cummax(), then .min() per column
     """
     # YOUR CODE HERE
+    tvl['date'] = pd.to_datetime(tvl['date'])
+    tvl_pivot = tvl.pivot(index='date', columns='protocol', values='tvl_usd')
+    drawdowns = (tvl_pivot / tvl_pivot.cummax() - 1).min()
+    worst_protocol = drawdowns.idxmin()
+    worst_drawdown_pct = round(drawdowns.min() * 100, 2)
+    return (worst_protocol, worst_drawdown_pct)
     return None
 
 
@@ -199,6 +250,9 @@ def ex15_safe_wei_total(wei_values):
     Hint: Python ints never overflow. You already have wei_to_eth().
     """
     # YOUR CODE HERE
+    total_wei = sum(wei_values)
+    total_eth = wei_to_eth(total_wei)
+    return total_eth
     return None
 
 
@@ -214,6 +268,20 @@ def challenge_wallet_summary(trades, pair_info, wallet_labels, eth_price=ETH_PRI
     for favourite_pair; merge in labels; .fillna("unknown"); .nlargest(3, ...)
     """
     # YOUR CODE HERE
+    d=trades.copy()
+    d['gas_spent_usd'] = d['gas_used'] * d['gas_price_gwei'] / 1e9 * eth_price
+    summary = d.groupby('wallet').agg(
+        trades=('tx_hash', 'count'),
+        volume_usd=('amount_usd', 'sum'),
+        gas_spent_usd=('gas_spent_usd', 'sum'),
+        avg_trade_usd=('amount_usd', 'mean'),
+        favourite_pair=('pair', lambda x: x.value_counts().idxmax())
+    ).reset_index()
+    summary = summary.merge(wallet_labels, on='wallet', how='left')
+    summary['label'] = summary['label'].fillna('unknown')
+    summary = summary[['wallet', 'label', 'trades', 'volume_usd', 'gas_spent_usd', 'avg_trade_usd', 'favourite_pair']]
+    top_3_wallets = summary.nlargest(3, 'volume_usd').reset_index(drop=True)
+    return top_3_wallets
     return None
 
 

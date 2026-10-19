@@ -1,0 +1,31 @@
+{
+  "generated_at": 1790339846,
+  "total_valid_rows": 5,
+  "total_skipped": 3,
+  "wallets": {
+    "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045": {
+      "total_value_usd": 16367.48,
+      "token_count": 2,
+      "largest_holding": {
+        "token": "ETH",
+        "value_usd": 11367.48
+      }
+    },
+    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984": {
+      "total_value_usd": 9667.85,
+      "token_count": 2,
+      "largest_holding": {
+        "token": "UNI",
+        "value_usd": 6420.0
+      }
+    },
+    "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D": {
+      "total_value_usd": 6741.2,
+      "token_count": 1,
+      "largest_holding": {
+        "token": "WBTC",
+        "value_usd": 6741.2
+      }
+    }
+  }
+}

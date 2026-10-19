@@ -1,0 +1,20 @@
+{
+  "protocols": [
+    {
+      "name": "Lido",
+      "tvl": 32000000000,
+      "chain": "Ethereum"
+    },
+    {
+      "name": "Aave V3",
+      "tvl": 12800000000,
+      "chain": "Ethereum"
+    },
+    {
+      "name": "Uniswap V3",
+      "tvl": 5200000000,
+      "chain": "Ethereum"
+    }
+  ],
+  "fetched_at": 1789740529
+}

@@ -10,7 +10,6 @@ This file tells Claude Code how to work in the
 A complete, beginner-friendly public course:
 **Python → Blockchain Data Engineer → ML Engineer**
 
-Learner: Angel (only1angelnath), Lagos. Experienced DuneSQL analyst, blockchain native.
 Goal: Blockchain Data Engineer / ML Engineer role within 6 months.
 
 ---

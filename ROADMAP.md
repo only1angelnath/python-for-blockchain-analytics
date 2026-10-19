@@ -1,3 +1,4 @@
+
 # Course Roadmap — Week by Week
 
 Full curriculum breakdown. Tick each item as you complete it.
@@ -5,6 +6,7 @@ Full curriculum breakdown. Tick each item as you complete it.
 ---
 
 ## Phase 0 — Setup (Week 1)
+
 - [ ] Dev environment: Python 3.12+, VS Code, Jupyter Lab
 - [ ] Git + GitHub: init, add, commit, push, branching
 - [ ] Milestone: fork repo, push first commit with your name
@@ -14,18 +16,21 @@ Full curriculum breakdown. Tick each item as you complete it.
 ## Phase 1 — Python Fundamentals (Weeks 2–6)
 
 ### Week 2 — Syntax, Variables & Data Types
+
 - [ ] `lesson.ipynb` — all 8 sections run without errors
 - [ ] `exercises.py` — 7 exercises + challenge attempted independently
 - [ ] Transaction receipt formatter mini-project working
 - [ ] Committed: `phase-1/week-02: syntax and variables complete`
 
 ### Week 3 — Control Structures
+
 - [ ] `lesson.ipynb` — if/elif, for, while, break/continue, range, nesting
 - [ ] `exercises.py` — all 7 exercises + challenge attempted
 - [ ] Wallet activity classifier producing correct output
 - [ ] Committed: `phase-1/week-03: control structures complete`
 
 ### Week 4 — Data Structures
+
 - [ ] `lesson.ipynb` — lists, tuples, dicts, sets (intro)
 - [ ] `lesson_expanded.ipynb` — deep dive: all methods, copying, Counter, defaultdict
 - [ ] `lesson_advanced.ipynb` — 5 applied projects (optional but recommended)
@@ -35,6 +40,7 @@ Full curriculum breakdown. Tick each item as you complete it.
 - [ ] Committed: `phase-1/week-04: data structures complete`
 
 ### Week 5 — Functions & Modules
+
 - [ ] `lesson.ipynb` — def, defaults, *args, **kwargs, lambda, scope, modules
 - [ ] `exercises.py` — all 8 exercises + challenge attempted
 - [ ] `blockchain_utils.py` — runs self-test clean (`python3 blockchain_utils.py`)
@@ -42,16 +48,19 @@ Full curriculum breakdown. Tick each item as you complete it.
 - [ ] Committed: `phase-1/week-05: functions, modules, blockchain_utils`
 
 ### Week 6a — OOP Foundations (External Class)
+
 - [ ] All 8 files in `week-06a-oop-for-beginner-class-by-doabble-danny/` worked through
 - [ ] Can answer the 4 self-assessment questions in the README
 
 ### Week 6b — OOP Advanced: Blockchain Classes
+
 - [ ] `lesson.ipynb` — all 8 sections including Wallet and Transaction classes
 - [ ] `exercises.py` — all 6 exercises + capstone challenge attempted
 - [ ] Blockchain simulation runs and prints correct balances
 - [ ] Committed: `phase-1/week-06b: OOP advanced complete`
 
 ### Phase 1 Capstone — simple-chain
+
 - [ ] `capstone-simple-chain.py` runs without errors
 - [ ] Chain validates correctly (`is_valid_chain()` returns True)
 - [ ] Balances are correct for all addresses
@@ -62,6 +71,7 @@ Full curriculum breakdown. Tick each item as you complete it.
 ## Phase 2 — Python for Data Analysis (Weeks 7–10)
 
 ### Week 7 — File Handling & Error Handling
+
 - [ ] `lesson.ipynb` — CSV, JSON, try/except, custom exceptions, logging, free APIs
 - [ ] `blockchain_data_tools.py` — read and understand every tool section
 - [ ] `exercises.py` — all 6 exercises + challenge attempted
@@ -70,21 +80,25 @@ Full curriculum breakdown. Tick each item as you complete it.
 - [ ] Committed: `phase-2/week-07: file handling and error handling`
 
 ### Week 8 — Pandas & NumPy
+
 - [ ] `lesson.ipynb`
 - [ ] `exercises.py` attempted
 - [ ] Committed: `phase-2/week-08: pandas and numpy`
 
 ### Week 9 — Data Visualization
+
 - [ ] `lesson.ipynb`
 - [ ] `exercises.py` attempted
 - [ ] Committed: `phase-2/week-09: visualization`
 
 ### Week 10 — APIs & SQL from Python
+
 - [ ] `lesson.ipynb`
 - [ ] `exercises.py` attempted
 - [ ] Committed: `phase-2/week-10: apis and sql`
 
 ### Phase 2 Capstone — defi-dashboard
+
 - [ ] Multi-source DeFi analytics dashboard working and deployed
 - [ ] Committed: `phase-2/capstone: defi-dashboard`
 
@@ -93,18 +107,23 @@ Full curriculum breakdown. Tick each item as you complete it.
 ## Phase 3 — Blockchain Analytics (Weeks 11–14)
 
 ### Week 11 — Blockchain Data Structures
+
 - [ ] Completed + committed
 
 ### Week 12 — web3.py
+
 - [ ] Completed + committed
 
 ### Week 13 — DEX & DeFi Analysis
+
 - [ ] Completed + committed
 
 ### Week 14 — Streamlit Dashboards
+
 - [ ] Completed + committed
 
 ### Phase 3 Capstone — chain-analyst
+
 - [ ] Deployed to Streamlit Cloud
 - [ ] Public URL shareable
 

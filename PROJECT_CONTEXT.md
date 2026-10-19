@@ -13,9 +13,8 @@
 3. **Deliver files individually, never as zips** — Angel's stated preference.
 4. **Always verify Python files run before delivering** — `python3 file.py 2>&1` must be clean.
 5. **OOP week was split** — `week-06a` is external beginner class by Doabble Danny; `week-06b` is our advanced blockchain OOP lesson.
-6. **Week 04 has three notebooks** — `lesson.ipynb` (intro), `lesson_expanded.ipynb` (deep dive), `lesson_advanced.ipynb` (5 applied projects).
+6. **Week 04 has two notebooks** — `lesson_expanded.ipynb` (deep dive), `lesson_advanced.ipynb` (5 applied projects).
 7. **`blockchain_utils.py` travels with the course** — started in week-05, imported in all later phases.
-8. **SQL parallels are mandatory** — Angel is an experienced DuneSQL analyst; every new Python concept gets a SQL equivalent.
 
 ---
 
@@ -77,10 +76,6 @@
 
 ## Known gaps to fill (not blocking but noted)
 
-- `week-03-control-structures/exercises_solutions.py` — missing, needs creating
-- `week-04-data-structures/lesson.ipynb` — the intro-level notebook, missing
-- `week-04-data-structures/exercises.py` — the standard exercises file, missing
-- `week-04-data-structures/exercises_solutions.py` — missing
 - `phase-2-python-for-data/week-07-files-error-handling/sample_holdings.csv` — sample data file, created during exercises but not committed
 
 ---

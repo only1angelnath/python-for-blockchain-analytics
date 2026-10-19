@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "description": "Free blockchain data API configuration for the course",
+  "apis": {
+    "defillama": {
+      "base_url": "https://api.llama.fi",
+      "requires_key": false,
+      "rate_limit": "generous",
+      "docs": "https://defillama.com/docs/api"
+    },
+    "coingecko": {
+      "base_url": "https://api.coingecko.com/api/v3",
+      "requires_key": false,
+      "rate_limit": "30/min on free tier",
+      "docs": "https://www.coingecko.com/api/documentation"
+    },
+    "etherscan": {
+      "base_url": "https://api.etherscan.io/api",
+      "requires_key": true,
+      "key_env_var": "ETHERSCAN_API_KEY",
+      "rate_limit": "5/sec on free tier",
+      "signup": "https://etherscan.io/apis"
+    },
+    "thegraph": {
+      "base_url": "https://api.thegraph.com/subgraphs/name",
+      "requires_key": false,
+      "rate_limit": "varies by subgraph",
+      "docs": "https://thegraph.com/docs"
+    }
+  },
+  "rpc_endpoints": {
+    "ethereum": [
+      "https://rpc.ankr.com/eth",
+      "https://eth.llamarpc.com",
+      "https://ethereum.publicnode.com"
+    ],
+    "polygon": [
+      "https://rpc.ankr.com/polygon",
+      "https://polygon.llamarpc.com"
+    ],
+    "arbitrum": [
+      "https://rpc.ankr.com/arbitrum",
+      "https://arbitrum.llamarpc.com"
+    ],
+    "base": [
+      "https://rpc.ankr.com/base",
+      "https://base.llamarpc.com"
+    ]
+  }
+}

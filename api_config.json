@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "apis": {
+    "defillama": {
+      "requires_key": false,
+      "base_url": "https://api.llama.fi"
+    },
+    "coingecko": {
+      "requires_key": false,
+      "base_url": "https://api.coingecko.com/api/v3"
+    },
+    "etherscan": {
+      "requires_key": true,
+      "key_env_var": "ETHERSCAN_API_KEY",
+      "base_url": "https://api.etherscan.io/api"
+    },
+    "thegraph": {
+      "requires_key": false,
+      "base_url": "https://api.thegraph.com"
+    }
+  },
+  "rpc_endpoints": {
+    "ethereum": [
+      "https://rpc.ankr.com/eth",
+      "https://eth.llamarpc.com",
+      "https://ethereum.publicnode.com"
+    ],
+    "polygon": [
+      "https://rpc.ankr.com/polygon",
+      "https://polygon.llamarpc.com"
+    ],
+    "arbitrum": [
+      "https://rpc.ankr.com/arbitrum",
+      "https://arbitrum.llamarpc.com"
+    ],
+    "base": [
+      "https://rpc.ankr.com/base"
+    ]
+  }
+}

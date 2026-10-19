@@ -104,6 +104,7 @@ print(f"  Cache fresh: {fresh}")
 print(f"  TVL loaded:  ${data.get('tvl_usd', 0)/1e9:.2f}B")
 
 
+
 # ── SOLUTION 3 — Robust transaction parser ────────────────────
 print("\n── Solution 3: Robust transaction parser ──")
 

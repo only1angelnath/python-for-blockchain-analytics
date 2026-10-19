@@ -1,0 +1,25 @@
+{
+  "name": "Uniswap V3",
+  "chain": "ethereum",
+  "tvl_usd": 5200000000,
+  "volume_24h": 1800000000,
+  "top_pools": [
+    {
+      "pair": "USDC/ETH",
+      "fee": 500,
+      "tvl": 800000000
+    },
+    {
+      "pair": "USDC/ETH",
+      "fee": 3000,
+      "tvl": 450000000
+    },
+    {
+      "pair": "ETH/USDT",
+      "fee": 3000,
+      "tvl": 320000000
+    }
+  ],
+  "is_verified": true,
+  "launch_year": 2021
+}

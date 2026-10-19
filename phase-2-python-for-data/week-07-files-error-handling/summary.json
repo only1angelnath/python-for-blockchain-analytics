@@ -1,0 +1,10 @@
+{
+  "generated_at": 1790004042,
+  "total_wallets": 3,
+  "total_records": 4,
+  "wallet_values": {
+    "0xAlice": 20959.62,
+    "0xCarol": 6741.2,
+    "0xBob": 5000.0
+  }
+}

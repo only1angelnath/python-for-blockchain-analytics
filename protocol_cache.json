@@ -1,0 +1,8 @@
+{
+  "name": "Aave V3",
+  "chain": "ethereum",
+  "tvl_usd": 12800000000,
+  "borrowed_usd": 8200000000,
+  "users_24h": 8200,
+  "cached_at": 1790339846
+}
