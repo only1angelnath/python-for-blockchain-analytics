@@ -17,6 +17,7 @@ HOW TO USE
 import os
 import sys
 
+from matplotlib.ticker import FuncFormatter
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")                      # headless backend: figures are checked, not shown
@@ -42,8 +43,14 @@ def ex01_price_line(ohlc):
     Hint: fig, ax = plt.subplots(figsize=(10, 4)); ax.plot(x, y); ax.set_title(...)
     """
     # YOUR CODE HERE
-    return None
-
+    fig, ax =plt.subplots(figsize=(14,5))
+    ax.plot(ohlc['date'], ohlc['close'], color='red', linewidth=1.2)
+    ax.set_title("$ETH daily price")
+    ax.set_ylabel("Price(USD)")
+    ax.set_xlabel("Date")
+    ax.yaxis.set_major_formatter(lambda v, _: f"${v:,.0f}")
+    ax.xaxis.set_major_formatter("%b %Y")
+    return fig
 
 # ── Exercise 2: Overlay moving averages ────────────────────────────────────────
 def ex02_moving_averages(ohlc):
@@ -54,7 +61,17 @@ def ex02_moving_averages(ohlc):
     Hint: Series.rolling(n).mean(); pass label= to ax.plot; then ax.legend()
     """
     # YOUR CODE HERE
-    return None
+    fig, ax =plt.subplots(figsize=(14,5))
+    ax.plot(ohlc['date'], ohlc['close'], color='red', linewidth=1.2, label="Close", alpha=0.5)
+    ax.plot(ohlc["date"], ohlc["close"].rolling(7).mean(), color='blue', label="7d MA")
+    ax.plot(ohlc["date"], ohlc["close"].rolling(30).mean(), label="30d MA", color='yellow')
+    ax.set_title("$ETH daily price with Moving average", fontweight='bold', loc="center")
+    ax.set_ylabel("Price(USD)", loc="center")
+    ax.set_xlabel("Date")
+    ax.yaxis.set_major_formatter(lambda v, _: f"${v:,.0f}")
+    ax.xaxis.set_major_formatter("%b %Y")
+    ax.legend()
+    return fig
 
 
 # ── Exercise 3: Bar chart ──────────────────────────────────────────────────────
@@ -65,7 +82,13 @@ def ex03_volume_bar(trades):
     Dune parallel: 'Bar chart' on SELECT protocol, SUM(amount_usd) ... ORDER BY 2 DESC
     """
     # YOUR CODE HERE
-    return None
+    vol=trades.groupby("protocol")["amount_usd"].sum().sort_values(ascending=False)
+
+    fig, ax=plt.subplots(figsize=(10,5))
+    ax.bar(vol.index, vol.values)
+    ax.set_title("Protocol Volume (USD)")
+    ax.set_ylabel("Volume(USD)")
+    return fig
 
 
 # ── Exercise 4: Horizontal bars with readable labels ───────────────────────────
@@ -77,7 +100,13 @@ def ex04_wallet_barh(trades):
     Hint: ax.barh draws the first item at the BOTTOM. Sort accordingly.
     """
     # YOUR CODE HERE
-    return None
+    big=trades.groupby("wallet")["amount_usd"].sum().nlargest(5).sort_values()
+
+    fig, ax=plt.subplots(figsize=(10,5))
+    ax.barh([shorten_address(w) for w in big.index], big.values)
+    ax.set_title("Top 5 wallets by Volume(USD)")
+    ax.set_ylabel("Volume(USD)")
+    return fig
 
 
 # ── Exercise 5: Grouped bars ───────────────────────────────────────────────────
@@ -89,7 +118,13 @@ def ex05_grouped_bar(trades):
           then df.plot(kind='bar', ax=ax)
     """
     # YOUR CODE HERE
-    return None
+    pv=trades.pivot_table(index="protocol", columns="side", values="amount_usd", aggfunc="sum")
+
+    fig, ax=plt.subplots(figsize=(12,5))
+    pv.plot(kind="bar", ax=ax)
+    ax.set_title("Protocol Buy vs Sell Volume (USD) ")
+    ax.set_ylabel("Volume(USD) by Side")
+    return fig
 
 
 # ── Exercise 6: Scatter on log-log axes ────────────────────────────────────────
@@ -101,7 +136,17 @@ def ex06_scatter_loglog(trades):
     Hint: ax.scatter(..., s=10, alpha=0.4); ax.set_xscale("log")
     """
     # YOUR CODE HERE
-    return None
+    d = trades.dropna(subset=["gas_price_gwei"]).copy()
+    d["gas_cost_usd"] = d["gas_used"] * d["gas_price_gwei"] / 1e9 * ETH_PRICE
+
+    fig, ax=plt.subplots(figsize=(12,4.5))
+    ax.scatter(d["amount_usd"], d["gas_cost_usd"], s=8, alpha=0.3)
+    ax.set_title("SCatter plot of Volume(USD) vs gas cost(USD)")
+    ax.set_xscale('log')
+    ax.set_yscale("log")
+    ax.set_xlabel("Volume")
+    ax.set_ylabel("GAs cost")
+    return fig
 
 
 # ── Exercise 7: Stacked area ───────────────────────────────────────────────────
@@ -112,7 +157,14 @@ def ex07_stacked_area(tvl):
     Hint: pivot long -> wide, then ax.stackplot(x, [series...], labels=[...])
     """
     # YOUR CODE HERE
-    return None
+    wide=tvl.pivot_table(index="date", columns="protocol", values="tvl_usd")
+
+    fig, ax=plt.subplots(figsize=(10,4.5))
+    ax.stackplot(wide.index, wide.T.values, labels=wide.columns)
+    ax.set_title("Stacked Total Value Locked per protocol")
+    ax.legend(loc="upper left")
+    ax.set_ylabel("TVL(USD)")
+    return fig
 
 
 # ── Exercise 8: Two panels, shared x-axis ──────────────────────────────────────
@@ -123,7 +175,19 @@ def ex08_price_and_volume(ohlc):
     Hint: plt.subplots(2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]})
     """
     # YOUR CODE HERE
-    return None
+    fig, axes=plt.subplots(2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}, figsize=(12,6))
+
+    axes[0].plot(ohlc["date"], ohlc["close"])
+    axes[0].set_title("ETH daily price and volume")
+    axes[0].set_ylabel("Price(USD)")
+    axes[0].yaxis.set_major_formatter(lambda v, _: f"${v:,.0f}")
+    axes[0].set_xlabel("Date")
+
+    axes[1].bar(ohlc["date"], ohlc["volume_usd"])
+    axes[1].set_ylabel("Volume(USD)", loc="center")
+    axes[1].yaxis.set_major_formatter(lambda v, _: f"${v:,.0f}")
+    axes[1].set_xlabel("Date")
+    return fig
 
 
 # ── Exercise 9: Seaborn heatmap ────────────────────────────────────────────────
@@ -135,7 +199,17 @@ def ex09_gas_heatmap(gas):
           then sns.heatmap(pivot, cmap="YlOrRd", ax=ax)
     """
     # YOUR CODE HERE
-    return None
+    gas["day_of_week"] = gas["timestamp"].dt.dayofweek
+    gas["hour_of_day"] = gas["timestamp"].dt.hour
+    pivot = gas.pivot_table(index="day_of_week", columns="hour_of_day", values="base_fee_gwei", aggfunc="mean")
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.heatmap(pivot, cmap="YlOrRd", ax=ax)
+    ax.set_title("Mean Base Fee Gwei by Day of Week and Hour of Day")
+    ax.set_xlabel("Hour of Day")
+    ax.set_ylabel("Day of Week (0=Mon, 6=Sun)")
+    ax.legend(title="Mean Base Fee (Gwei)", loc="upper right")
+    return fig
 
 
 # ── Exercise 10: Histogram of a heavy-tailed variable ──────────────────────────
@@ -146,8 +220,13 @@ def ex10_trade_size_hist(trades):
     Hint: sns.histplot(data, bins=..., log_scale=True, ax=ax)
     """
     # YOUR CODE HERE
-    return None
+    data=trades["amount_usd"].dropna()
 
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.histplot(data, bins=30, log_scale=True, ax=ax)
+    ax.set_title("Distribution of trade sizes")
+    ax.set_xlabel("Trade size (USD, log scale)")
+    return fig
 
 # ── Exercise 11: Plotly candlestick ────────────────────────────────────────────
 def ex11_candlestick(ohlc):
@@ -158,7 +237,12 @@ def ex11_candlestick(ohlc):
           fig.update_layout(title=..., xaxis_rangeslider_visible=...)
     """
     # YOUR CODE HERE
-    return None
+    fig = go.Figure(go.Candlestick(
+        x=ohlc['date'], open=ohlc['open'], high=ohlc['high'], low=ohlc['low'], close=ohlc['close'],
+        name="ETH"
+    ))
+    fig.update_layout(title="ETH Candlestick Chart", xaxis_rangeslider_visible=False)
+    return fig
 
 
 # ── Exercise 12: Interactive multi-line ────────────────────────────────────────
@@ -170,7 +254,9 @@ def ex12_interactive_tvl(tvl):
     Hint: px.line(df, x=, y=, color=, title=); fig.update_layout(hovermode="x unified")
     """
     # YOUR CODE HERE
-    return None
+    fig = px.line(tvl, x='date', y='tvl_usd', color='protocol', title='TVL over time by protocol')
+    fig.update_layout(hovermode="x unified")
+    return fig
 
 
 # ── Challenge: 2x2 dashboard ───────────────────────────────────────────────────
@@ -184,7 +270,28 @@ def challenge_dashboard(ohlc, trades, allocation):
     and no '1e6' appears. Look at charts/challenge.png.
     """
     # YOUR CODE HERE
-    return None
+    """
+        One Figure, 2x2 grid, suptitle set, every panel has a title:
+        [0,0] ETH close line            [0,1] volume by protocol (4 bars)
+        [1,0] allocation pie (6 slices) [1,1] histogram of gas_price_gwei (>= 10 bins)
+        Use plt.subplots(2, 2) and tight_layout. Return the Figure.
+        Bonus (not checked): format the dates and the $ axis so nothing overlaps
+    """
+    vol = trades.groupby("protocol")["amount_usd"].sum().sort_values(ascending=False)
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    axes[0, 0].plot(ohlc["date"], ohlc["close"])
+    axes[0, 0].set_title("ETH close")
+    #axes[0, 0].xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))        # readable dates
+    axes[0, 1].bar(vol.index, vol.values)
+    axes[0, 1].set_title("Volume by protocol")
+    axes[0, 1].yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"${v/1e6:.1f}M"))   # no '1e6'
+    axes[1, 0].pie(allocation["value_usd"], labels=allocation["asset"], autopct="%1.0f%%")
+    axes[1, 0].set_title("Portfolio allocation")
+    axes[1, 1].hist(trades["gas_price_gwei"].dropna(), bins=20)
+    axes[1, 1].set_title("Gas price distribution")
+    fig.suptitle("DeFi desk dashboard", fontsize=16)
+    fig.tight_layout()
+    return fig
 
 
 # ══════════════════════════════════════════════════════════════════════════════

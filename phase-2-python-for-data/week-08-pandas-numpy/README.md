@@ -8,12 +8,12 @@ percentiles, and time series.
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `lesson.ipynb` | The lesson: concepts, SQL parallels, blockchain examples, mini project |
-| `exercises.py` | 15 exercises + 1 challenge. Self-checking (✅ / ❌ / ⬜). **No solutions.** |
-| `exercises_solutions.py` | Full solutions. ⚠️ Only open after attempting `exercises.py` |
-| `sample_data.py` | Deterministic offline datasets (DEX trades, gas, TVL, dimension tables) |
+| File                       | Purpose                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| `lesson.ipynb`           | The lesson: concepts, SQL parallels, blockchain examples, mini project            |
+| `exercises.py`           | 15 exercises + 1 challenge. Self-checking (✅ / ❌ / ⬜). **No solutions.** |
+| `exercises_solutions.py` | Full solutions. ⚠️ Only open after attempting `exercises.py`                  |
+| `sample_data.py`         | Deterministic offline datasets (DEX trades, gas, TVL, dimension tables)           |
 
 ## Requirements
 
